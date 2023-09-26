@@ -1,10 +1,5 @@
 package com.example.project.entity;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -35,6 +30,7 @@ public class AppUser implements UserDetails {
     private Boolean locked = false;
     @Column(name = "enabled")
     private Boolean enabled = false;
+    private String picture;
     @OneToMany(mappedBy = "user")
     private List<Post> post;
 
@@ -88,5 +84,13 @@ public class AppUser implements UserDetails {
     @Override
     public boolean isEnabled() {
         return enabled;
+    }
+
+    public String getPicture() {
+        return picture;
+    }
+
+    public void setPicture(String picture) {
+        this.picture = picture;
     }
 }

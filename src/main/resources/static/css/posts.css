@@ -1,0 +1,22 @@
+#profile_img{
+    border-radius: 50%;
+    width: 2%;
+    height: 2%;
+    margin-left: 90%;
+    cursor: pointer;
+}
+
+#filters{
+float: left;
+margin-left: 5%;
+margin-top: 2%;
+}
+
+#myPosts{
+  width: 20%;
+  height: 20%;
+}
+
+#label_myPosts{
+font-size: 100%;
+}

@@ -1,9 +1,6 @@
 package com.example.project.dto;
 
-import com.example.project.entity.AppUser;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 

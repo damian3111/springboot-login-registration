@@ -15,12 +15,9 @@ public interface TokenRepository extends JpaRepository<ConfirmationToken, Long> 
 
     Optional<ConfirmationToken> findByToken(String token);
 
-
-    //TODO
-    // sprawdzic co zwraca ten int
     @Transactional
     @Modifying
     @Query("UPDATE ConfirmationToken c SET c.confirmedAt = ?1 WHERE c.id = ?2")
-    public int updateConfirmedAt(LocalDateTime localDateTime, Long id);
+    int updateConfirmedAt(LocalDateTime localDateTime, Long id);
 
 }

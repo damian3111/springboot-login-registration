@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="ISO-8859-1">
     <title>Student Management System</title>
@@ -12,6 +12,7 @@
 #id{
 display: none;
 }
+
 </style>
 <body>
 <nav class="navbar navbar-expand-md bg-dark navbar-dark">
@@ -26,36 +27,38 @@ display: none;
 </nav>
 <br>
 <br>
-<div class = "container">
-    <div class = "row">
-        <div class ="col-lg-6 col-md-6 col-sm-6 container justify-content-center card">
-            <h1 class = "text-center"> Update Post </h1>
-            <div class = "card-body">
+<div class="container">
+    <div class="row">
+        <div class="col-lg-6 col-md-6 col-sm-6 container justify-content-center card">
+            <h1 class="text-center"> Update Post </h1>
+            <div class="card-body">
                 <form th:action="@{/editPost}" method="post">
 
-                        <input
-                                type = "number"
-                                id="id"
-                                name = "id"
-                                class = "form-control"
-                                placeholder="Post content"
-                                th:value="${id}"
-                        />
+                    <input
+                            type="number"
+                            id="id"
+                            name="id"
+                            class="form-control"
+                            placeholder="Post content"
+                            th:value="${id}"
+                    />
 
-                    <div class ="form-group">
+                    <div class="form-group">
                         <label> Post content</label>
                         <input
-                                type = "text"
-                                name = "content"
-                                class = "form-control"
+                                type="text"
+                                name="content"
+                                class="form-control"
                                 placeholder="Post content"
                         />
 
 
-                    <div class = "box-footer">
-                        <br/><button type="submit" class = "btn btn-primary">
-                            Submit
-                        </button>
+                        <div class="box-footer">
+                            <br/>
+                            <button type="submit" class="btn btn-primary">
+                                Submit
+                            </button>
+                        </div>
                     </div>
                 </form>
 

@@ -1,32 +1,35 @@
 package com.example.project.service;
 
 import com.example.project.dto.RegistrationRequest;
+import com.example.project.dto.ResetEmailRequest;
 import com.example.project.email.EmailSender;
 import com.example.project.entity.AppUser;
 import com.example.project.entity.AppUserRole;
 import com.example.project.entity.ConfirmationToken;
 import com.example.project.repository.TokenRepository;
 import com.example.project.repository.UserRepository;
-import com.sun.mail.imap.protocol.UID;
+import jakarta.mail.MessagingException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import lombok.SneakyThrows;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.security.Principal;
+import javax.naming.CannotProceedException;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 @Service
 @Getter
@@ -38,8 +41,10 @@ public class UserService implements UserDetailsService {
     private final PasswordEncoder bCryptPasswordEncoder;
     private final TokenRepository tokenRepository;
     private final EmailSender emailSender;
+    private final ResetService resetService;
 
-    @SneakyThrows
+
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         AppUser user = userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
@@ -49,31 +54,73 @@ public class UserService implements UserDetailsService {
         return user;
     }
 
-    public String findEmail(OAuth2User ouser, Principal principal){
-        try {
+    public AppUser findByUsername(String username){
+        return userRepository.findByEmail(username).orElseThrow();
+    }
 
-            String[] values = ouser.getAttributes().toString().split(", ");
+    public Optional<AppUser> findUser(String username){
+        return userRepository.findByEmail(username);
+    }
 
-            List<String> collect = Arrays.stream(values).filter(r -> r.startsWith("email=")).limit(1).collect(Collectors.toList());
-            String a = collect.get(0);
+    public boolean validate(RegistrationRequest registrationRequest, BindingResult bindingResult, RedirectAttributes redirectAttributes){
 
-            int length1 = a.length();
-            return a.substring(6, length1);
-
-
-
-        }catch (Exception e){
-            return principal.getName();
+        if (findUser(registrationRequest.email).isPresent()){
+            redirectAttributes.addFlashAttribute("tabE", "You're already registered");
+            return false;
 
         }
+
+
+
+        if (!registrationRequest.getPassword2().equals(registrationRequest.getPassword1())) {
+
+            redirectAttributes.addFlashAttribute("tabE", "Pass the same password");
+
+            return false;
+        }
+
+        if (bindingResult.hasErrors()) {
+            List<String> errors;
+
+            List<ObjectError> allErrors = bindingResult.getAllErrors();
+            errors = Arrays.stream(allErrors.get(0).getDefaultMessage().split(",")).toList();
+            redirectAttributes.addFlashAttribute("tabE", errors);
+
+            return false;
+
+        }
+        if (!emailValidation(registrationRequest.getEmail())) {
+            redirectAttributes.addFlashAttribute("tabE", "Incorrect email address");
+            return false;
+        }
+
+        return true;
+
     }
+
+    @Transactional
+    public void confirm(String token) throws CannotProceedException, IOException {
+
+        ConfirmationToken confirmationToken = tokenRepository.findByToken(token).
+                orElseThrow(() -> new IOException("Token not found"));
+
+        if(confirmationToken.getExpiresAt().isBefore(LocalDateTime.now()) || confirmationToken.getConfirmedAt() != null){
+            throw new CannotProceedException("Token has expired");
+        }
+
+        tokenRepository.updateConfirmedAt(LocalDateTime.now(), confirmationToken.getId());
+        userRepository.updateEnabled(confirmationToken.getAppUser().getId());
+
+    }
+
 
     public boolean emailValidation(String email){
         String pattern = "\\w{5,20}@\\w{2,10}.\\w{2,5}";
         return Pattern.compile(pattern).matcher(email).matches();
     }
 
-    public AppUser saveUser(RegistrationRequest registrationRequest) throws Exception {
+    @Transactional(rollbackFor = {MessagingException.class, Error.class})
+    public AppUser saveUser(RegistrationRequest registrationRequest) throws MessagingException {
 
         AppUser appUser = new AppUser();
         appUser.setEmail(registrationRequest.getEmail());
@@ -81,6 +128,7 @@ public class UserService implements UserDetailsService {
         appUser.setLastName(registrationRequest.getLastName());
         appUser.setAppUserRole(AppUserRole.USER);
         appUser.setPassword(bCryptPasswordEncoder.encode(registrationRequest.password1));
+        appUser.setPicture("img/profile_img.jpg");
         userRepository.save(appUser);
 
         String token = UUID.randomUUID().toString();
@@ -88,11 +136,20 @@ public class UserService implements UserDetailsService {
 
         tokenRepository.save(confirmationToken);
 
-        String link = "http://account1111.alwaysdata.net/confirm?token=" + token;
+        String link = "http://localhost:8080/confirm?token=" + token;
 
         emailSender.send(appUser.getEmail(), buildEmail(appUser.getFirstName(), link));
 
         return appUser;
+    }
+
+    public void reset(ResetEmailRequest resetEmailRequest) throws IOException {
+
+        AppUser user = userRepository.findByEmail(resetEmailRequest.getEmail())
+                .orElseThrow(() -> new IOException("User not found"));
+
+        resetService.resetPassword(resetEmailRequest.getEmail(), user);
+
     }
 
     private String buildEmail(String name, String link) {

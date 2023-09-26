@@ -1,57 +1,37 @@
 package com.example.project.controller;
 
-import com.example.project.dto.PostContentRequest;
-import com.example.project.dto.RegistrationRequest;
-import com.example.project.dto.ResetEmailRequest;
-import com.example.project.dto.ResetRequest;
+import com.example.project.dto.*;
 import com.example.project.entity.*;
 import com.example.project.repository.PasswordResetTokenRepository;
-import com.example.project.repository.TokenRepository;
-import com.example.project.repository.UserRepository;
 import com.example.project.service.PostService;
 import com.example.project.service.ResetService;
 import com.example.project.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.Banner;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
+import javax.naming.CannotProceedException;
+import java.io.IOException;
 import java.security.Principal;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
-    private final TokenRepository tokenRepository;
-    private final UserRepository userRepository;
     private final ResetService resetService;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
-    private final PasswordEncoder passwordEncoder;
     private final PostService postService;
 
     @ModelAttribute("user")
     public RegistrationRequest registrationRequest(){
         return new RegistrationRequest();
     }
-
 
     @ModelAttribute("resetE")
     public ResetEmailRequest resetRequest(){
@@ -75,7 +55,7 @@ public class UserController {
             return "redirect:/posts";
         }
 
-        return "login/logowanie";
+        return "login/login";
     }
 
     @GetMapping("/register")
@@ -83,126 +63,104 @@ public class UserController {
         return "register/registration";
     }
 
-
-    @PostMapping("/todelete")
-    public String todetele(@RequestBody RegistrationRequest registrationRequest){
-
-        return "register/registration";
-    }
-    /////////////////////////////
-
     @PostMapping("/register")
-    public String registerUser(@Valid @ModelAttribute("user")@RequestBody RegistrationRequest registrationRequest, BindingResult bindingResult, RedirectAttributes redirectAttributes) throws Exception {
-        if (registrationRequest.getPassword2().equals(registrationRequest.getPassword1())) {
-            List<String> errors = new ArrayList<>();
+    public String registerUser(@Valid @ModelAttribute("user") @RequestBody RegistrationRequest registrationRequest,
+                               BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+        if(userService.validate(registrationRequest, bindingResult, redirectAttributes)){
 
-            if (bindingResult.hasErrors()) {
-                List<ObjectError> allErrors = bindingResult.getAllErrors();
-                errors = Arrays.stream(allErrors.get(0).getDefaultMessage().split(",")).toList();
-                redirectAttributes.addFlashAttribute("tabE", errors);
-
-                return "redirect:/register";
-            }
-            if (!userService.emailValidation(registrationRequest.getEmail())){
-                redirectAttributes.addFlashAttribute("tabE", "Incorrect email address");
-                return "redirect:/register";
-            }
-
-            userService.saveUser(registrationRequest);
-            return "redirect:/register";
+            try {
+                userService.saveUser(registrationRequest);
+            } catch (Exception ignored) {}
         }
-
-
-        redirectAttributes.addFlashAttribute("tabE", "Pass the same password");
 
         return "redirect:/register";
     }
 
     @GetMapping("/confirm")
-    public String confirm(@RequestParam("token") String token) throws Exception {
+    public String confirm(@RequestParam("token") String token, RedirectAttributes redirectAttributes) {
 
-        //TODO
-        // przeniesc do service
-        ConfirmationToken confirmationToken = tokenRepository.findByToken(token).orElseThrow(() -> new Exception("Token not found"));
 
-        if(confirmationToken.getExpiresAt().isBefore(LocalDateTime.now())){
-            return "redirect:/login";
+        try {
+            userService.confirm(token);
+        } catch (CannotProceedException e) {
+            redirectAttributes.addFlashAttribute("tabE", "Token has expired  or already confirmed");
+        } catch (IOException e) {
+            redirectAttributes.addFlashAttribute("tabE", "Cannot find token");
         }
 
-        tokenRepository.updateConfirmedAt(LocalDateTime.now(), confirmationToken.getId());
-        userRepository.updateEnabled(confirmationToken.getAppUser().getId());
 
-        return "redirect:register/registration";
+        return "redirect:register";
     }
 
     @GetMapping("/reset")
-    public String resetPassword(){
+    public String resetGet(){
         return "reset/resetEmail";
     }
 
     @PostMapping("/reset")
-    public String resetPassword2(@ModelAttribute("resetE")ResetEmailRequest resetEmailRequest, RedirectAttributes redirectAttributes) throws Exception {
+    public String resetPost(@ModelAttribute("resetE")ResetEmailRequest resetEmailRequest, RedirectAttributes redirectAttributes) {
 
         try {
-            AppUser user = userRepository.findByEmail(resetEmailRequest.getEmail()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        }catch (Exception e){
+            userService.reset(resetEmailRequest);
+        } catch (IOException e) {
             redirectAttributes.addFlashAttribute("errorReset", "You're not registered");
-            return "redirect:/reset";
         }
 
-        resetService.sendEmail(resetEmailRequest.getEmail());
-        return "redirect:/register";
-    }
-
-    @GetMapping("/changePassword")
-    public String resetPassword2Post(@RequestParam("token") String token, RedirectAttributes model) throws Exception {
-        //TODO
-        // Do service
-
-        PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(token).orElseThrow(() -> new UsernameNotFoundException("Token not found"));
-
-        if(passwordResetToken.getExpiryDate().isBefore(LocalDateTime.now())){
-            throw new Exception("Token's expired");
-        }
-
-        model.addFlashAttribute("email_attr", passwordResetToken.getAppUser().getEmail());
-        return "redirect:/resetPassword";
+        return "redirect:/reset";
     }
 
     @GetMapping("/resetPassword")
-    public String resetPasswordGet(){
+    public String resetPasswordGet(Model model, @RequestParam("token") String token){
+
+        PasswordResetToken passwordResetToken;
+        try {
+            passwordResetToken = passwordResetTokenRepository.findByToken(token)
+                    .orElseThrow(IOException::new);
+        } catch (IOException e) {
+            return "redirect:/login";
+        }
+
+        if(!resetService.validate(passwordResetToken))
+            return "redirect:/login";
+
+        model.addAttribute("email_attr", passwordResetToken.getAppUser().getEmail());
+
 
         return "reset/resetPassword";
     }
 
     @PostMapping("/resetPassword")
-    public String resetPasswordPost(@ModelAttribute("resetP") ResetRequest resetRequest, @RequestParam("email_attr") String email){
-        AppUser user = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    public String resetPasswordPost(@ModelAttribute("resetP") ResetRequest resetRequest) {
 
-        userRepository.changePassword(user.getEmail(), passwordEncoder.encode(resetRequest.getPassword1()));
+        try {
+            resetService.reset(resetRequest);
+        } catch (IOException e) {
+            return "redirect:/login";
+        }
 
         return "register/registration";
     }
 
     @GetMapping("/posts")
-    public String getPosts(Model model){
-        List<Post> posts = postService.getAllPosts();
+    public String posts(@ModelAttribute("filters") FilterRequest filterRequest, Model model, Principal principal){
+        List<Post> posts;
+        if (filterRequest.isMyPosts()){
+            posts = userService.findByUsername(principal.getName()).getPost();
+        }else{
+            posts = postService.getAllPosts();
+        }
 
+        model.addAttribute("image", userService.findByUsername(principal.getName()).getPicture());
         model.addAttribute("post_attr", posts);
 
         return "posts/posts";
     }
 
     @GetMapping("/editPost/{id}")
-    public String editPost(@PathVariable Long id, Model model, Principal principal, @AuthenticationPrincipal OAuth2User ouser) throws Exception {
+    public String editPost(@PathVariable Long id, Model model, Principal principal) {
 
-        Post post = postService.getById(id);
-
-        String substring = userService.findEmail(ouser, principal);
-
-        if (!substring.equals(post.getUser().getEmail())){
-            throw new Exception("Wrong");
-        }
+        if (!postService.validate(id, principal))
+            return "redirect:/posts";
 
         model.addAttribute("edit_id", id);
 
@@ -211,61 +169,39 @@ public class UserController {
     }
 
     @PostMapping("/editPost")
-    public String editPost(@RequestParam("id") Long id, @RequestParam("content") String content, Principal principal, @AuthenticationPrincipal OAuth2User ouser) throws Exception {
+    public String editPost(@RequestParam("id") Long id, @RequestParam("content") String content, Principal principal) {
 
-        Post post = postService.getById(id);
-
-        String substring = userService.findEmail(ouser, principal);
-
-
-
-
-        if (!substring.equals(post.getUser().getEmail())){
-            throw new Exception("Wrong");
-        }
-
-        postService.setContentById(id, content);
+        if (postService.validate(id, principal))
+            postService.setContentById(id, content);
 
         return "redirect:/posts";
     }
 
     @GetMapping("/deletePost/{id}")
-    public String deletePost(@PathVariable Long id, Principal principal, @AuthenticationPrincipal OAuth2User ouser) throws Exception {
-        Post post = postService.getById(id);
-
-        String substring = userService.findEmail(ouser, principal);
-
-
-        if (!substring.equals(post.getUser().getEmail())){
-            throw new Exception("Wrong");
-        }
-
-        postService.deletePostById(id);
+    public String deletePost(@PathVariable Long id, Principal principal) {
+        if (postService.validate(id, principal))
+            postService.deletePostById(id);
 
         return "redirect:/posts";
     }
 
     @GetMapping("/insertPost")
-    public String insertPost(){
+    public String insertPostGet(){
 
         return "posts/insertPost";
     }
 
     @PostMapping("/insertPost")
-    public String post_insertPost(@ModelAttribute("postC") PostContentRequest postContentRequest, Authentication authentication){
-        String string = authentication.getPrincipal().getClass().toString();
+    public String insertPost_Post(@ModelAttribute("postC") PostContentRequest postContentRequest){
 
-            AppUser user = userRepository.findByEmail(postContentRequest.getEmail()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-            Post post = new Post();
+        try {
+            postService.insert(postContentRequest);
+        } catch (IOException ignored) {}
 
-            post.setUser(user);
-            post.setContent(postContentRequest.getContent());
-
-            postService.insertPost(post);
-
-            return "redirect:/posts";
+        return "redirect:/posts";
 
     }
+
 
 }

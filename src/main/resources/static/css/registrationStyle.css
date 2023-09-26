@@ -51,7 +51,7 @@ label{
 .passwordContainer1{
     border: 1px solid rgb(219, 219, 219);
 background-color: rgb(219, 219, 219);
-font-size: 17px;
+font-size: 105%;
 border-radius: 8px;
 width: 23vw;
 margin-left: 4.8vw;
@@ -83,7 +83,7 @@ height: 5.4vh;
     outline: none;
     border: 1px solid rgb(219, 219, 219);
     background-color: rgb(219, 219, 219);
-    font-size: 17px;
+    font-size: 103%;
     border-radius: 8px;
 }
 
@@ -91,7 +91,7 @@ height: 5.4vh;
     outline: none;
     border: 1px solid rgb(219, 219, 219);
     background-color: rgb(219, 219, 219);
-    font-size: 17px;
+    font-size: 103%;
     border-radius: 8px;
     height: 5vh;
     width: 20vw;

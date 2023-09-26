@@ -1,27 +1,18 @@
 package com.example.project.config;
 
 import java.io.IOException;
-import java.util.Locale;
-
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.LocaleResolver;
 
 
 @Component
 public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
-
-
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request,
@@ -37,7 +28,6 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
             errorMessage = "Confirm your email";
             request.getSession().setAttribute("username1", request.getParameter("username"));
         } else if(exception.getClass() == BadCredentialsException.class){
-
             errorMessage = "Email or password wrong";
         }
 

@@ -1,14 +1,16 @@
 package com.example.project.service;
 
+import com.example.project.dto.ResetRequest;
 import com.example.project.email.EmailSender;
 import com.example.project.entity.AppUser;
 import com.example.project.entity.PasswordResetToken;
 import com.example.project.repository.PasswordResetTokenRepository;
 import com.example.project.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -19,20 +21,35 @@ public class ResetService {
     private final EmailSender emailSender;
     private final UserRepository userRepository;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public String sendEmail(String email) throws Exception {
-        AppUser user = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
+    @Transactional
+    public void resetPassword(String email, AppUser user) {
         String token = UUID.randomUUID().toString();
 
-        String link = "http://account1111.alwaysdata.net/changePassword?token=" + token;
+        String link = "http://localhost:8080/resetPassword?token=" + token;
 
         PasswordResetToken passwordResetToken = new PasswordResetToken(token, user, LocalDateTime.now().plusMinutes(55));
         passwordResetTokenRepository.save(passwordResetToken);
 
-        emailSender.send(email, buildEmail(user.getFirstName(), link));
+        try {
+            emailSender.send(email, buildEmail(user.getFirstName(), link));
+        } catch (Exception e) {}
+    }
 
-        return null;
+    public boolean validate(PasswordResetToken passwordResetToken) {
+
+        return !passwordResetToken.getExpiryDate().isBefore(LocalDateTime.now());
+    }
+
+    public void reset(ResetRequest resetRequest) throws IOException {
+
+        AppUser user = userRepository.findByEmail(resetRequest.getEmail())
+                .orElseThrow(() -> new IOException("User not found"));
+
+        userRepository.changePassword(user.getEmail(), passwordEncoder.encode(resetRequest.getPassword1()));
+
     }
 
     private String buildEmail(String name, String link) {
