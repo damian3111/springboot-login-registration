@@ -52,9 +52,25 @@ body{
     padding: 0%;
 }
 
+#register_button{
+    display: inline;
+    margin-left: 20%;
+    font-size: 115%;
+}
+
 h1{
-    padding-top: 1vw;
-    padding-bottom: 2vw;
+    margin-left: 33%;
+    text-align: center;
+        display: inline;
+
+}
+
+form{
+    margin-top: 5vh;
+}
+
+#register_button{
+    display: inline;
 }
 
 button{
@@ -89,6 +105,7 @@ label{
     background-color: #f1f1f1;
     height: 70vh;
     width: 30vw;
+    padding-top: 1%;
     text-align: center;
 }
 

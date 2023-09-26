@@ -14,6 +14,7 @@
     <div id="content1">
         <div id="form_cont">
             <h1>Register</h1>
+            <a id="login_button" th:href="@{/login}">Log in</a>
 
             <form th:action="@{/register}" method="post" th:object="${user}">
                 <label for="password2">First name</label>
@@ -57,7 +58,7 @@
                 <br/><br/>
 
                 <div th:each="error1: ${tabE}">
-                    <h6 th:text="${error1}"></h6><br/>
+                    <h4 th:text="${error1}"></h4><br/>
                 </div>
 
                 <button id="button1" name="button1">Register</button>

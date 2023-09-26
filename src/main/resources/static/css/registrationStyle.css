@@ -3,6 +3,21 @@
     font-family: Arial, Helvetica, sans-serif;
 }
 
+#login_button{
+margin-left: 20%;
+font-size: 115%;
+}
+
+h1{
+
+        margin-left: 27%;
+        text-align: center;
+        display: inline;
+}
+h4{
+    display: inline;
+}
+
 body{
     margin: 0%;
     padding: 0%;
@@ -39,7 +54,12 @@ label{
     margin-left: 4.8vw;
 }
 
+form{
+    margin-top: 5%;
+}
+
 #form_cont{
+    padding-top: 1%;
     margin-left: 27vw;
     background-color: #f1f1f1;
     height: 80vh;

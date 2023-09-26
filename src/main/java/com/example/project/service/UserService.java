@@ -70,8 +70,6 @@ public class UserService implements UserDetailsService {
 
         }
 
-
-
         if (!registrationRequest.getPassword2().equals(registrationRequest.getPassword1())) {
 
             redirectAttributes.addFlashAttribute("tabE", "Pass the same password");
@@ -93,6 +91,7 @@ public class UserService implements UserDetailsService {
             redirectAttributes.addFlashAttribute("tabE", "Incorrect email address");
             return false;
         }
+        redirectAttributes.addFlashAttribute("tabE", "Confirm your email address");
 
         return true;
 

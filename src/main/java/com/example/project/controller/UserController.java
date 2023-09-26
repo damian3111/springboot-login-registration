@@ -73,6 +73,7 @@ public class UserController {
             } catch (Exception ignored) {}
         }
 
+
         return "redirect:/register";
     }
 
@@ -102,6 +103,8 @@ public class UserController {
 
         try {
             userService.reset(resetEmailRequest);
+            redirectAttributes.addFlashAttribute("errorReset", "Check your email inbox");
+
         } catch (IOException e) {
             redirectAttributes.addFlashAttribute("errorReset", "You're not registered");
         }
