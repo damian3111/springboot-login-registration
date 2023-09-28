@@ -147,13 +147,14 @@ public class UserController {
     @GetMapping("/posts")
     public String posts(@ModelAttribute("filters") FilterRequest filterRequest, Model model, Principal principal){
         List<Post> posts;
+        AppUser user = userService.findByUsername(principal.getName());
         if (filterRequest.isMyPosts()){
-            posts = userService.findByUsername(principal.getName()).getPost();
+            posts = user.getPost();
         }else{
             posts = postService.getAllPosts();
         }
 
-        model.addAttribute("image", userService.findByUsername(principal.getName()).getPicture());
+        model.addAttribute("image", user.getPicture());
         model.addAttribute("post_attr", posts);
 
         return "posts/posts";

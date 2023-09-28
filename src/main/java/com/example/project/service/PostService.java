@@ -20,7 +20,7 @@ public class PostService {
     private final UserRepository userRepository;
 
     public List<Post> getAllPosts(){
-        return postRepository.findAll();
+        return postRepository.findAllFetch();
     }
 
     public Post getById(Long id){return postRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("User not found"));}

@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
 
@@ -15,4 +17,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Transactional
     int setContentById(Long id, String content);
 
+    @Query("SELECT p FROM Post p JOIN FETCH p.user u")
+    List<Post> findAllFetch();
 }

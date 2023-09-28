@@ -30,10 +30,6 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
 
         Map<String, Object> attributes = oAuth2User.getAttributes();
 
-        for (Object value : attributes.values()) {
-            System.out.println(value.toString());
-        }
-
         AppUser user;
         try {
             userRepository.findByEmail(attributes.get("email").toString())
