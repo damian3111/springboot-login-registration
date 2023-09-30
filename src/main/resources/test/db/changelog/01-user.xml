@@ -17,7 +17,7 @@
             <column  name="email"  type="VARCHAR(255)">
                 <constraints nullable="false" unique="false"/>
             </column>
-            <column  name="enabled"  type="bit">
+            <column  name="enabled"  type="boolean">
                 <constraints nullable="false" unique="false"/>
             </column>
             <column  name="first_name"  type="varchar(255)">
@@ -97,6 +97,7 @@
 
     <changeSet  author="damian3111"  id="5">
         <insert tableName="user_table">
+            <column  name="id"  value="1"/>
             <column  name="app_user_role"  value="USER"/>
             <column  name="email"  value="sampleEmail@gmail.com"/>
             <column  name="enabled"  value="1"/>
@@ -106,6 +107,62 @@
             <column  name="password"  value="$2a$10$2yrAnYbzUEE04EQopKzpZORHgaRZzz1VkR5CyV75ZfxIUiywnk6Oi "/>
             <column  name="picture"  value="img/profile_img.jpg"/>
         </insert>
+        <insert tableName="user_table">
+            <column  name="id"  value="2"/>
+            <column  name="app_user_role"  value="USER"/>
+            <column  name="email"  value="jakubNowak@gmail.com"/>
+            <column  name="enabled"  value="0"/>
+            <column  name="first_name"  value="Jakub"/>
+            <column  name="last_name"  value="Nowak"/>
+            <column  name="locked"  value="0"/>
+            <column  name="password"  value="$2a$10$2yrAnYbzUEE04EQopKzpZORHgaRZzz1VkR5CyV75ZfxIUiywnk6Oi "/>
+            <column  name="picture"  value="img/profile_img.jpg"/>
+        </insert>
     </changeSet>
 
+    <changeSet  author="damian3111"  id="6">
+        <insert tableName="post">
+            <column  name="id"  value="1"/>
+            <column  name="content"  value="post content 1"/>
+            <column  name="user_id"  value="2"/>
+        </insert>
+        <insert tableName="post">
+            <column  name="id"  value="2"/>
+            <column  name="content"  value="post content 2"/>
+            <column  name="user_id"  value="2"/>
+        </insert>
+        <insert tableName="post">
+            <column  name="id"  value="3"/>
+            <column  name="content"  value="post content 3"/>
+            <column  name="user_id"  value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet  author="damian3111"  id="7">
+        <insert tableName="confirmation_token">
+            <column  name="id"  value="1"/>
+            <column  name="confirmed_at"  value="2023-09-29:00:11:41"/>
+            <column  name="created_at"  value="2023-09-29 00:10:49"/>
+            <column  name="expires_at"  value="2023-09-29 00:25:49"/>
+            <column  name="token"  value="9a5ddb6d-6241-44fa-ae75-4b7cf8132855"/>
+            <column  name="app_user_id"  value="2"/>
+        </insert>
+        <insert tableName="confirmation_token">
+            <column  name="id"  value="2"/>
+            <column  name="created_at"  value="2023-09-29 00:10:49"/>
+            <column  name="expires_at"  value="2023-09-29 00:25:49"/>
+            <column  name="token"  value="cc76d476-9f47-494b-931f-4d84b9396a9f"/>
+            <column  name="app_user_id"  value="1"/>
+        </insert>
+    </changeSet>
+
+    <changeSet  author="damian3111"  id="8">
+        <insert tableName="password_reset_token">
+            <column  name="id"  value="1"/>
+            <column  name="expiry_date"  value="2023-09-29:00:11:41"/>
+            <column  name="token"  value="818edb9f-afca-4390-8ed5-6c55b922d7f8"/>
+            <column  name="user_id"  value="2"/>
+        </insert>
+
+    </changeSet>
 </databaseChangeLog>
