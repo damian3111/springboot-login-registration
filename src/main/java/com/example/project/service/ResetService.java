@@ -30,7 +30,7 @@ public class ResetService {
 
         String link = "http://localhost:8080/resetPassword?token=" + token;
 
-        PasswordResetToken passwordResetToken = new PasswordResetToken(token, user, LocalDateTime.now().plusMinutes(55));
+        PasswordResetToken passwordResetToken = new PasswordResetToken(token, user, LocalDateTime.now().plusMinutes(15));
         passwordResetTokenRepository.save(passwordResetToken);
 
         try {

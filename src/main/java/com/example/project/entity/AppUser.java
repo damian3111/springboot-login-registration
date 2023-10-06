@@ -9,11 +9,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Getter
 @Setter
-@EqualsAndHashCode
 @NoArgsConstructor
 @Table(name = "user_table")
 public class AppUser implements UserDetails {
@@ -92,5 +92,18 @@ public class AppUser implements UserDetails {
 
     public void setPicture(String picture) {
         this.picture = picture;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AppUser user = (AppUser) o;
+        return Objects.equals(email, user.email);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(email);
     }
 }

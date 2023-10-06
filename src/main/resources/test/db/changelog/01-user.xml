@@ -26,7 +26,7 @@
             <column  name="last_name"  type="varchar(255)">
                 <constraints nullable="true" unique="false"/>
             </column>
-            <column  name="locked"  type="bit">
+            <column  name="locked"  type="boolean">
                 <constraints nullable="false" unique="false"/>
             </column>
             <column  name="password"  type="varchar(255)">

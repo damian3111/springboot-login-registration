@@ -14,6 +14,7 @@ public class PasswordConstraintValidator implements ConstraintValidator<ValidPas
     @Override
     public void initialize(final ValidPassword arg0) {
     }
+
     @SneakyThrows
     @Override
     public boolean isValid(String password, ConstraintValidatorContext context) {

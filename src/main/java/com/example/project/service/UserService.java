@@ -25,10 +25,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.naming.CannotProceedException;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.regex.Pattern;
 
 @Service
@@ -42,7 +39,6 @@ public class UserService implements UserDetailsService {
     private final TokenRepository tokenRepository;
     private final EmailSender emailSender;
     private final ResetService resetService;
-
 
 
     @Override
@@ -81,7 +77,7 @@ public class UserService implements UserDetailsService {
             List<String> errors;
 
             List<ObjectError> allErrors = bindingResult.getAllErrors();
-            errors = Arrays.stream(allErrors.get(0).getDefaultMessage().split(",")).toList();
+            errors = Arrays.stream(Objects.requireNonNull(allErrors.get(0).getDefaultMessage()).split(",")).toList();
             redirectAttributes.addFlashAttribute("tabE", errors);
 
             return false;
