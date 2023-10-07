@@ -4,6 +4,7 @@ import com.example.project.dto.FilterRequest;
 import com.example.project.dto.PostContentRequest;
 import com.example.project.entity.AppUser;
 import com.example.project.entity.Post;
+import com.example.project.repository.PostRepository;
 import com.example.project.service.PostService;
 import com.example.project.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -21,6 +23,7 @@ public class PostController {
 
     private final UserService userService;
     private final PostService postService;
+    private final PostRepository postRepository;
 
     @ModelAttribute("postC")
     public PostContentRequest postContentRequest(){
@@ -37,11 +40,16 @@ public class PostController {
             posts = postService.getAllPosts();
         }
 
+        if(!filterRequest.getSentence().equals("")){
+           posts = posts.stream().filter(r -> r.getContent().contains(filterRequest.getSentence())).collect(Collectors.toList());
+        }
+
         model.addAttribute("image", user.getPicture());
         model.addAttribute("post_attr", posts);
 
         return "posts/posts";
     }
+
 
     @GetMapping("/editPost/{id}")
     public String editPost(@PathVariable Long id, Model model, Principal principal) {

@@ -12,6 +12,8 @@ import jakarta.mail.MessagingException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -32,6 +34,7 @@ import java.util.regex.Pattern;
 @Getter
 @Setter
 @RequiredArgsConstructor
+@EnableCaching
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
@@ -50,6 +53,7 @@ public class UserService implements UserDetailsService {
         return user;
     }
 
+    @Cacheable(cacheNames = "user")
     public AppUser findByUsername(String username){
         return userRepository.findByEmail(username).orElseThrow();
     }

@@ -1,8 +1,6 @@
 package com.example.project.repository;
 
 import com.example.project.entity.AppUser;
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -15,6 +13,7 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<AppUser, Long> {
 
+    @Query("SELECT a FROM AppUser a JOIN FETCH a.post p WHERE a.email = ?1")
     Optional<AppUser> findByEmail(String email);
 
     @Transactional
