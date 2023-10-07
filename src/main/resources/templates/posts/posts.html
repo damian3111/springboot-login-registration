@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html" lang="en">
 <head>
     <meta charset="ISO-8859-1">
     <title>Student Management System</title>
@@ -29,10 +29,12 @@
 
 </nav>
 <div id="filters">
-    <h1>Filters</h1>
+    <h1>Filters</h1><br/><br/>
     <form th:action="@{/posts}" method="get" th:object="${filters}">
         <label for="myPosts" id="label_myPosts">My posts</label>
-        <input type="checkbox" id="myPosts" name="myPosts" th:field="*{myPosts}"/><br/><br/>
+        <input type="checkbox" id="myPosts" name="myPosts" th:field="*{myPosts}"/><br/>
+        <label for="sentence" id="label_sentence">Find post by content</label><br/>
+        <input type="text" id="sentence" name="sentence" th:field="*{sentence}"/><br/><br/>
         <button class="btn btn-primary btn-sm mb-3">Search</button>
     </form>
 </div>

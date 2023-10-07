@@ -40,7 +40,7 @@ public class PostController {
             posts = postService.getAllPosts();
         }
 
-        if(!filterRequest.getSentence().equals("")){
+        if(filterRequest.getSentence() != null){
            posts = posts.stream().filter(r -> r.getContent().contains(filterRequest.getSentence())).collect(Collectors.toList());
         }
 

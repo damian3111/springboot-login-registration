@@ -6,6 +6,12 @@
     cursor: pointer;
 }
 
+table{
+table-layout: fixed;
+        word-wrap: break-word;
+
+}
+
 #filters{
 float: left;
 margin-left: 5%;

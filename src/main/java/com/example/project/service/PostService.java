@@ -23,7 +23,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
 
-    @Cacheable(key = "#root.target.MY_KEY", value = "posts")
+    @Cacheable(value = "posts")
     public List<Post> getAllPosts(){
         return postRepository.findAllFetch();
     }
@@ -53,6 +53,7 @@ public class PostService {
         return name.equals(post.getUser().getEmail());
     }
 
+    @CacheEvict(value = "posts", allEntries = true)
     public void insert(PostContentRequest postContentRequest) throws IOException {
         AppUser user = userRepository.findByEmail(postContentRequest.getEmail())
                 .orElseThrow(() -> new IOException("User not found"));
