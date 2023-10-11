@@ -8,24 +8,30 @@ import com.example.project.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
 import java.io.IOException;
 import java.security.Principal;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@EnableCaching
 public class PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
 
     @Cacheable(value = "posts")
-    public List<Post> getAllPosts(){
-        return postRepository.findAllFetch();
+    public Page<Post> getAllPosts(int page){
+        return postRepository.findAllFetch(PageRequest.of(page, 5));
+    }
+
+    @Cacheable(value = "posts")
+    public Page<Post> getAllPostsBySentence(int page, String sentence){
+
+        return postRepository.findAllFetchBySentence(sentence, PageRequest.of(page, 5));
     }
 
     public Post getById(Long id){return postRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("User not found"));}
@@ -37,7 +43,7 @@ public class PostService {
 
     @CacheEvict(value = "posts", allEntries = true)
     public void deletePostById(Long id){
-         postRepository.deleteById(id);
+        postRepository.deleteById(id);
     }
 
     public Post insertPost(Post post){
@@ -67,4 +73,15 @@ public class PostService {
 
     }
 
+    @Cacheable(value = "posts")
+    public Page<Post> findUserPostBySentence(String username, String sentence, int page) {
+
+        return postRepository.findUserPostBySentence(username, sentence, PageRequest.of(page, 5));
+    }
+
+    @Cacheable(value = "posts")
+    public Page<Post> findUserPost(String username, int page){
+
+        return postRepository.findUserPost(username, PageRequest.of(page, 5));
+    }
 }

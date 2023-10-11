@@ -44,7 +44,6 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
             user.setFirstName(attributes.get("given_name").toString());
             user.setEnabled(true);
             user.setLastName(attributes.get("family_name").toString());
-            System.out.println("^&&^" + attributes.get("picture").toString());
             user.setPicture(attributes.get("picture").toString());
 
             userRepository.save(user);

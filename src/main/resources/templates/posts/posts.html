@@ -37,6 +37,8 @@
         <input type="text" id="sentence" name="sentence" th:field="*{sentence}"/><br/><br/>
         <button class="btn btn-primary btn-sm mb-3">Search</button>
     </form>
+    <a th:if="${prev >= 0}" th:href="@{'/posts?page=' + ${prev} + '&myPosts=' + ${myPosts} + '&sentence=' + ${sentence}}">asdasdasd post</a>
+    <a th:if="${next}" th:href="@{'/posts?page=' + ${next} + '&myPosts=' + ${myPosts} + '&sentence=' + ${sentence}}">asdasdasd post</a>
 </div>
 
 

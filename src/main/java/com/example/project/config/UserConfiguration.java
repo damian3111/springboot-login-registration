@@ -1,6 +1,7 @@
 package com.example.project.config;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
 @EnableAsync
+@EnableCaching
 @EnableTransactionManagement
 @RequiredArgsConstructor
 public class UserConfiguration {
@@ -41,7 +43,8 @@ public class UserConfiguration {
                 .authorizeHttpRequests(r -> r.requestMatchers("/sample/**", "/rest/**", "/login", "/login", "/register", "/reset", "/resetPassword", "/changePassword/**",  "/css/*", "/js/*", "/img/*", "/confirm/**").permitAll()
                         .anyRequest().authenticated())
                 .formLogin(r -> r.loginPage("/login").permitAll()
-                        .failureHandler(new CustomAuthenticationFailureHandler()).defaultSuccessUrl("/posts", true))
+                        .failureHandler(new CustomAuthenticationFailureHandler())
+                        .defaultSuccessUrl("/posts", true))
                 .logout(r -> r
                         .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                         .invalidateHttpSession(true)

@@ -5,6 +5,7 @@ import com.example.project.email.EmailSender;
 import com.example.project.entity.AppUser;
 import com.example.project.entity.AppUserRole;
 import com.example.project.entity.ConfirmationToken;
+import com.example.project.repository.PostRepository;
 import com.example.project.repository.TokenRepository;
 import com.example.project.repository.UserRepository;
 import jakarta.mail.MessagingException;
@@ -14,6 +15,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -55,12 +58,16 @@ class UserServiceTest {
     BindingResult bindingResult;
     @Mock
     RedirectAttributes redirectAttributes;
+    @Mock
+    PostRepository postRepository;
+
 
 
     @BeforeEach
     void beforeEach() {
-       underTest = new UserService(userRepository, passwordEncoder, tokenRepository, emailSender, resetService);
+       underTest = new UserService(userRepository, passwordEncoder, tokenRepository, emailSender, resetService, postRepository);
     }
+
 
     @Test
     void itShouldFindUserByEmail() {
@@ -203,12 +210,19 @@ class UserServiceTest {
                 "$2a$10$2yrAnYbzUEE04EQopKzpZORHgaRZzz1VkR5CyV75ZfxIUiywnk6Oi", AppUserRole.USER);
 
         ConfirmationToken confirmationToken = new ConfirmationToken(token, createdAt, expiresAt, user);
+        confirmationToken.setId(1L);
 
-        mockStatic(LocalDateTime.class);
+
         given(tokenRepository.findByToken(token)).willReturn(Optional.of(confirmationToken));
-        given(LocalDateTime.now()).willReturn(now);
+
         //when
-        underTest.confirm(token);
+        try (MockedStatic<LocalDateTime> utilities = Mockito.mockStatic(LocalDateTime.class)) {
+            utilities.when(LocalDateTime::now)
+                    .thenReturn(now);
+
+            underTest.confirm(token);
+        }
+
         //then
         then(tokenRepository).should().updateConfirmedAt(any(), anyLong());
         then(userRepository).should().updateEnabled(user.getId());
@@ -227,13 +241,17 @@ class UserServiceTest {
 
         ConfirmationToken confirmationToken = new ConfirmationToken(token, createdAt, expiresAt, user);
 
-        mockStatic(LocalDateTime.class);
         given(tokenRepository.findByToken(token)).willReturn(Optional.of(confirmationToken));
-        given(LocalDateTime.now()).willReturn(now);
         //when
-        assertThatThrownBy(() -> underTest.confirm(token))
-                .hasMessage("Token has expired")
-                .isInstanceOf(CannotProceedException.class);
+
+        try (MockedStatic<LocalDateTime> utilities = Mockito.mockStatic(LocalDateTime.class)) {
+            utilities.when(LocalDateTime::now)
+                    .thenReturn(now);
+
+            assertThatThrownBy(() -> underTest.confirm(token))
+                    .hasMessage("Token has expired")
+                    .isInstanceOf(CannotProceedException.class);
+        }
         //then
 
     }

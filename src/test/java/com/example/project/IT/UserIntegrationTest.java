@@ -4,14 +4,17 @@ import com.example.project.BaseIT;
 import com.example.project.dto.RegistrationRequest;
 import com.example.project.dto.ResetRequest;
 import com.example.project.entity.AppUser;
+import com.example.project.repository.PostRepository;
+import com.example.project.repository.TokenRepository;
 import com.example.project.repository.UserRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -24,19 +27,29 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@WithMockUser("janNowakowski@gmial.com")
 @ActiveProfiles("IT")
+@DirtiesContext
 public class UserIntegrationTest extends BaseIT {
 
     @Autowired
     MockMvc mockMvc;
-
     @Autowired
     UserRepository userRepository;
-
+    @Autowired
+    PostRepository postRepository;
     @Autowired
     PasswordEncoder passwordEncoder;
+    @Autowired
+    TokenRepository tokenRepository;
 
+
+    @AfterEach
+    void tearDown() {
+
+        postRepository.deleteAll();
+        tokenRepository.deleteAll();
+        userRepository.deleteAll();
+    }
     @Test
     void itShouldRegisterAndAuthenticateUser() throws Exception {
 
@@ -60,6 +73,7 @@ public class UserIntegrationTest extends BaseIT {
         assertThat(userRepository.findByEmail(email)).isPresent();
     }
 
+
     @Test
     void itShouldRegisterAndChangeUsersPassword() throws Exception {
 
@@ -78,6 +92,11 @@ public class UserIntegrationTest extends BaseIT {
                 .flashAttr("user", registrationRequest));
 
         userRepository.updateEnabled(userRepository.findByEmail(email).get().getId());
+
+        userRepository.updateEnabled(userRepository.findByEmail(email).get().getId());
+
+        mockMvc.perform(formLogin().user(email).password(password))
+                .andExpect(authenticated().withUsername(email));
 
         mockMvc.perform(post("/resetPassword")
                 .with(csrf())

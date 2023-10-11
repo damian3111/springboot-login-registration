@@ -6,14 +6,13 @@ import com.example.project.email.EmailSender;
 import com.example.project.entity.AppUser;
 import com.example.project.entity.AppUserRole;
 import com.example.project.entity.ConfirmationToken;
+import com.example.project.repository.PostRepository;
 import com.example.project.repository.TokenRepository;
 import com.example.project.repository.UserRepository;
 import jakarta.mail.MessagingException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -34,7 +33,6 @@ import java.util.regex.Pattern;
 @Getter
 @Setter
 @RequiredArgsConstructor
-@EnableCaching
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
@@ -42,6 +40,7 @@ public class UserService implements UserDetailsService {
     private final TokenRepository tokenRepository;
     private final EmailSender emailSender;
     private final ResetService resetService;
+    private final PostRepository postRepository;
 
 
     @Override
@@ -51,11 +50,6 @@ public class UserService implements UserDetailsService {
             throw new IllegalStateException("User is disabled");
 
         return user;
-    }
-
-    @Cacheable(cacheNames = "user")
-    public AppUser findByUsername(String username){
-        return userRepository.findByEmail(username).orElseThrow();
     }
 
     public Optional<AppUser> findUser(String username){
@@ -102,7 +96,6 @@ public class UserService implements UserDetailsService {
 
         ConfirmationToken confirmationToken = tokenRepository.findByToken(token).
                 orElseThrow(() -> new IOException("Token not found"));
-
         if(confirmationToken.getExpiresAt().isBefore(LocalDateTime.now()) || confirmationToken.getConfirmedAt() != null){
             throw new CannotProceedException("Token has expired");
         }
@@ -150,6 +143,8 @@ public class UserService implements UserDetailsService {
         resetService.resetPassword(resetEmailRequest.getEmail(), user);
 
     }
+
+
 
     private String buildEmail(String name, String link) {
         return "<div style=\"font-family:Helvetica,Arial,sans-serif;font-size:16px;margin:0;color:#0b0c0c\">\n" +
@@ -219,4 +214,5 @@ public class UserService implements UserDetailsService {
                 "\n" +
                 "</div></div>";
     }
+
 }

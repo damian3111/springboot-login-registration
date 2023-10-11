@@ -13,8 +13,11 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<AppUser, Long> {
 
-    @Query("SELECT a FROM AppUser a JOIN FETCH a.post p WHERE a.email = ?1")
+    @Query("SELECT a FROM AppUser a WHERE a.email = ?1")
     Optional<AppUser> findByEmail(String email);
+
+    @Query("SELECT a FROM AppUser a JOIN FETCH a.post p WHERE a.email = ?2 AND p.content LIKE CONCAT('%', ?1, '%')")
+    Optional<AppUser> findByEmailFetchBySentence(String sentence, String email);
 
     @Transactional
     @Modifying(flushAutomatically = true, clearAutomatically = true)

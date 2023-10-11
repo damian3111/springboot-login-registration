@@ -10,6 +10,6 @@ public class ErrorControllerImpl implements ErrorController {
     @RequestMapping("/error")
     public String handleError() {
 
-        return "redirect:/login";
+        return "redirect:/register";
     }
 }
