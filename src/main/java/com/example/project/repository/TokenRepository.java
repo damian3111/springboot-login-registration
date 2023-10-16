@@ -20,4 +20,7 @@ public interface TokenRepository extends JpaRepository<ConfirmationToken, Long> 
     @Query("UPDATE ConfirmationToken c SET c.confirmedAt = ?1 WHERE c.id = ?2")
     int updateConfirmedAt(LocalDateTime localDateTime, Long id);
 
+    @Query("Select c FROM ConfirmationToken c JOIN FETCH c.appUser u WHERE u.email = ?1 ORDER BY c.createdAt DESC LIMIT 1")
+    ConfirmationToken findLatestCreatedConfirmationToken(String email);
+
 }

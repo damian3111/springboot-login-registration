@@ -1,7 +1,8 @@
+
 #profile_img{
     border-radius: 50%;
-    width: 2%;
-    height: 2%;
+    width: 40px;
+    height: 40px;
     margin-left: 90%;
     cursor: pointer;
 }
@@ -9,7 +10,6 @@
 table{
 table-layout: fixed;
         word-wrap: break-word;
-
 }
 
 #filters{
@@ -25,4 +25,17 @@ margin-top: 2%;
 
 #label_myPosts{
 font-size: 100%;
+}
+
+.arrow{
+    width: 20px;
+
+}
+
+#anchor_posts{
+    margin-left: 48%;
+}
+
+#arrow2{
+    transform: rotate(180deg)
 }

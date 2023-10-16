@@ -13,6 +13,7 @@ import jakarta.mail.MessagingException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -42,6 +43,8 @@ public class UserService implements UserDetailsService {
     private final ResetService resetService;
     private final PostRepository postRepository;
 
+    @Value("${project.host}")
+    String host;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -123,15 +126,7 @@ public class UserService implements UserDetailsService {
         appUser.setPicture("img/profile_img.jpg");
         userRepository.save(appUser);
 
-        String token = UUID.randomUUID().toString();
-        ConfirmationToken confirmationToken = new ConfirmationToken(token, LocalDateTime.now(), LocalDateTime.now().plusMinutes(15), appUser);
-
-        tokenRepository.save(confirmationToken);
-
-        String link = "http://localhost:8080/confirm?token=" + token;
-
-        emailSender.send(appUser.getEmail(), buildEmail(appUser.getFirstName(), link));
-
+        sendEmail(appUser);
         return appUser;
     }
 
@@ -145,6 +140,15 @@ public class UserService implements UserDetailsService {
     }
 
 
+    public void sendEmail(AppUser user) throws MessagingException {
+        String token = UUID.randomUUID().toString();
+        ConfirmationToken confirmationToken = new ConfirmationToken(token, LocalDateTime.now(), LocalDateTime.now().plusMinutes(15), user);
+
+        tokenRepository.save(confirmationToken);
+        String link = "http://" + host + "/confirm?token=" + token;
+
+        emailSender.send(user.getEmail(), buildEmail(user.getFirstName(), link), "Activate Account");
+    }
 
     private String buildEmail(String name, String link) {
         return "<div style=\"font-family:Helvetica,Arial,sans-serif;font-size:16px;margin:0;color:#0b0c0c\">\n" +

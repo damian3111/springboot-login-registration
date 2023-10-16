@@ -25,7 +25,7 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
 
         String errorMessage="";
         if (exception.getMessage().equalsIgnoreCase("User is disabled")) {
-            errorMessage = "Confirm your email";
+            errorMessage = "Confirm your email address";
             request.getSession().setAttribute("username1", request.getParameter("username"));
         } else if(exception.getClass() == BadCredentialsException.class){
             errorMessage = "Email or password wrong";

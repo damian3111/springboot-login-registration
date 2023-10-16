@@ -17,8 +17,8 @@
             <h1>Login</h1>
             <a id="register_button" th:href="@{/register}">Sign up</a>
             <form th:action="@{/login}" method="post">
-                <label for="username">Enter username</label>
-                <input type="text" id="username" name="username" class="input_c" placeholder="email"/> <br/><br/>
+                <label for="username">Enter email address</label>
+                <input type="text" id="username" name="username" class="input_c" placeholder="email address"/> <br/><br/>
 
                 <label for="password">Enter password</label>
                 <div id="passwordContainer" class="passwordContainer1">
@@ -30,17 +30,21 @@
                         <img id="icon1" src="img/view.png" onclick="function1()" alt="show password icon"/>
                     </div>
                 </div>
-                <a th:href="@{/reset}">Forgot password?</a><br/><br/><br/>
-
+                <a th:href="@{/reset}">Forgot password?</a><br/><br/>
 
                 <div th:if="${session.SPRING_SECURITY_LAST_EXCEPTION != null}">
-                    <p th:text="${session.SPRING_SECURITY_LAST_EXCEPTION}"></p>
+                    <h3 th:text="${session.SPRING_SECURITY_LAST_EXCEPTION}"></h3>
+                    <a th:if="${session.SPRING_SECURITY_LAST_EXCEPTION} == 'Confirm your email'" th:href="@{/resendEmail}"><h4>Resend email</h4></a>
 
                     <div th:text="${@customRemoveAttribute.removeVerificationMessageFromSession()}"></div>
-
                 </div>
 
-                <button id="button1" name="button1">Log In</button>
+                <h4 th:if=${login_info}>Password hasn't been changed</h4>
+                <div th:each="error1: ${login_info}" >
+                    <h4 th:text="${error1}"></h4>
+                </div>
+
+                <button id="login_button" name="login_button">Log In</button>
 
 
             </form>

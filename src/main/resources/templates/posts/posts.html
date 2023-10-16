@@ -37,8 +37,6 @@
         <input type="text" id="sentence" name="sentence" th:field="*{sentence}"/><br/><br/>
         <button class="btn btn-primary btn-sm mb-3">Search</button>
     </form>
-    <a th:if="${prev >= 0}" th:href="@{'/posts?page=' + ${prev} + '&myPosts=' + ${myPosts} + '&sentence=' + ${sentence}}">asdasdasd post</a>
-    <a th:if="${next}" th:href="@{'/posts?page=' + ${next} + '&myPosts=' + ${myPosts} + '&sentence=' + ${sentence}}">asdasdasd post</a>
 </div>
 
 
@@ -66,7 +64,7 @@
 
 <div class="container">
     <div class="row">
-        <h1> List Posts </h1>
+        <h1>Posts </h1>
     </div>
 
     <div class="row">
@@ -131,7 +129,10 @@
 
 
     </table>
-
+    <div id="anchor_posts">
+        <a th:if="${prev >= 0}" th:href="@{'/posts?page=' + ${prev} + '&myPosts=' + ${myPosts} + '&sentence=' + ${sentence}}"><img class="arrow" id="arrow1" src="img/arrow.png" alt="left arrow"/></a>
+        <a th:if="${next}" th:href="@{'/posts?page=' + ${next} + '&myPosts=' + ${myPosts} + '&sentence=' + ${sentence}}"><img class="arrow" id="arrow2" src="img/arrow.png" alt="right arrow"/></a>
+    </div>
 </div>
 </body>
 </html>

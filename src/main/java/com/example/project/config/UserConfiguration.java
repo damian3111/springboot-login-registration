@@ -40,7 +40,7 @@ public class UserConfiguration {
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
-                .authorizeHttpRequests(r -> r.requestMatchers("/sample/**", "/rest/**", "/login", "/login", "/register", "/reset", "/resetPassword", "/changePassword/**",  "/css/*", "/js/*", "/img/*", "/confirm/**").permitAll()
+                .authorizeHttpRequests(r -> r.requestMatchers("/sample/**", "/rest/**", "/login", "/register", "/reset", "/resetPassword", "/changePassword/**",  "/css/*", "/js/*", "/img/*", "/confirm/**", "/resendEmail/**").permitAll()
                         .anyRequest().authenticated())
                 .formLogin(r -> r.loginPage("/login").permitAll()
                         .failureHandler(new CustomAuthenticationFailureHandler())

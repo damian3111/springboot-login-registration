@@ -154,6 +154,20 @@
             <column  name="token"  value="cc76d476-9f47-494b-931f-4d84b9396a9f"/>
             <column  name="app_user_id"  value="1"/>
         </insert>
+        <insert tableName="confirmation_token">
+            <column  name="id"  value="3"/>
+            <column  name="created_at"  value="2023-09-29 15:10:49"/>
+            <column  name="expires_at"  value="2023-09-29 15:25:49"/>
+            <column  name="token"  value="b2569e8e-644a-42f2-b15a-8c3a5d69fa09 "/>
+            <column  name="app_user_id"  value="1"/>
+        </insert>
+        <insert tableName="confirmation_token">
+            <column  name="id"  value="4"/>
+            <column  name="created_at"  value="2023-09-29 13:10:49"/>
+            <column  name="expires_at"  value="2023-09-29 13:25:49"/>
+            <column  name="token"  value="8e37da4f-d268-4c33-9e4d-9eca228cc8a9"/>
+            <column  name="app_user_id"  value="1"/>
+        </insert>
     </changeSet>
 
     <changeSet  author="damian3111"  id="8">

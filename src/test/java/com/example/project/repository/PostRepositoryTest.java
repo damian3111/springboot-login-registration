@@ -25,8 +25,6 @@ class PostRepositoryTest extends BaseIT {
 
     @Autowired
     PostRepository underTest;
-    @Autowired
-    private UserRepository userRepository;
 
     @Test
     void itShouldSetPostsContent() {
@@ -50,7 +48,8 @@ class PostRepositoryTest extends BaseIT {
         //when
         Page<Post> allPosts = underTest.findAllFetch(PageRequest.of(0, 5));
         //then
-        assertThat(allPosts.getContent().size()).isEqualTo(3);
+        assertThat(allPosts.getContent())
+                .hasSize(3);
     }
 
     @ParameterizedTest
@@ -84,8 +83,8 @@ class PostRepositoryTest extends BaseIT {
     static Stream<Arguments> itShouldFindPostsBySentenceDATA() {
         return Stream.of(
                 Arguments.of( "post content", Arrays.asList("post content 1", "post content 2", "post content 3")),
-                Arguments.of( "post content 2", Arrays.asList("post content 2")),
-                Arguments.of( "3", Arrays.asList("post content 3")),
+                Arguments.of( "post content 2", List.of("post content 2")),
+                Arguments.of( "3", List.of("post content 3")),
                 Arguments.of( "wrong", Collections.emptyList())
         );
     }

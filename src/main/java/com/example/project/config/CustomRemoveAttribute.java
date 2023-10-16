@@ -14,7 +14,7 @@ public class CustomRemoveAttribute {
             HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
             HttpSession session = request.getSession();
             session.removeAttribute("SPRING_SECURITY_LAST_EXCEPTION");
-        } catch (RuntimeException ex) {
+        } catch (RuntimeException ignored) {
         }
     }
 }

@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.mockStatic;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -153,7 +152,7 @@ class UserServiceTest {
         //when
         boolean result = underTest.validate(registrationRequest, bindingResult, redirectAttributes);
         //then
-        assertThat(result).isEqualTo(false);
+        assertThat(result).isFalse();
         then(redirectAttributes).should().addFlashAttribute("tabE", "Pass the same password");
     }
 
@@ -284,7 +283,7 @@ class UserServiceTest {
         assertThat(result).isEqualTo(user);
         then(userRepository).should().save(user);
         then(tokenRepository).should().save(any());
-        then(emailSender).should().send(any(), any());
+        then(emailSender).should().send(any(), any(), any());
     }
 
 }

@@ -56,7 +56,7 @@ class ResetServiceTest {
         then(passwordResetTokenRepository).should().save(argumentCaptor.capture());
         PasswordResetToken value = argumentCaptor.getValue();
         assertThat(value.getAppUser().getEmail()).isEqualTo(email);
-        then(emailSender).should().send(any(), any());
+        then(emailSender).should().send(any(), any(), any());
     }
 
 }

@@ -47,6 +47,7 @@ a{
     color: #595959;
     margin-left: 14.8vw;
     margin-top: 2vh;
+    text-align: center;
 }
 
 label{
@@ -68,7 +69,7 @@ form{
 }
 
 
-.passwordContainer1{
+.inputContainer{
     border: 1px solid rgb(219, 219, 219);
 background-color: rgb(219, 219, 219);
 font-size: 105%;

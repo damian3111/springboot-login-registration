@@ -17,20 +17,20 @@
             <a id="login_button" th:href="@{/login}">Log in</a>
 
             <form th:action="@{/register}" method="post" th:object="${user}">
-                <label for="password2">First name</label>
+                <label for="name">First name</label>
                 <input type="text" id="name" name="name" autofocus="autofocus" placeholder="name" class="input_c"
                        th:field="*{firstName}"/> <br/><br/>
 
-                <label for="password2">Last name</label>
+                <label for="last_name">Last name</label>
                 <input type="text" id="last_name" name="last_name" placeholder="last name" class="input_c"
                        th:field="*{lastName}"/><br/><br/>
 
-                <label for="password2">Email</label>
-                <input type="text" id="username" name="username" autofocus="autofocus" placeholder="email"
+                <label for="username">Email address</label>
+                <input type="text" id="username" name="username" autofocus="autofocus" placeholder="email address"
                        class="input_c" th:field="*{email}"/><br/> <br/>
 
                 <label for="password2">New password</label>
-                <div id="passwordContainer" class="passwordContainer1">
+                <div id="passwordContainer" class="inputContainer">
 
                     <div id="pas" class="pass1">
                         <input type="password" id="password2" name="password2" class="input_c" placeholder="password"
@@ -45,8 +45,8 @@
                 <br/>
 
                 <label for="password1">Confirm password</label>
-                <div id="passwordContainer2" class="passwordContainer1">
-                    <div id="pas2" class="pass1">
+                <div id="passwordContainer2" class="inputContainer">
+                    <div class="pass1">
                         <input type="password" id="password1" name="password1" class="input_c" placeholder="password"
                                autofocus="autofocus" th:field="*{password2}"><br/><br/>
                     </div>
@@ -58,7 +58,9 @@
                 <br/><br/>
 
                 <div th:each="error1: ${tabE}">
-                    <h4 th:text="${error1}"></h4><br/>
+                    <h4 th:text="${error1}"></h4><br/><br/>
+                    <a th:if="${error1} == 'Confirm your email address'" th:href="@{/resendEmail}"><h4>Resend email</h4></a>
+
                 </div>
 
                 <button id="button1" name="button1">Register</button>

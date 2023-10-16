@@ -18,7 +18,7 @@
             <form th:action="@{/reset}" method="post" th:object="${resetE}">
 
                 <label for="email">Email</label>
-                <div id="emailContainer" class="passwordContainer1">
+                <div id="emailContainer" class="inputContainer">
                     <div id="ema" class="pass1">
                         <input type="password" id="email" name="email" class="input_c" placeholder="email"
                                th:field="*{email}">
@@ -28,7 +28,7 @@
 
                 <h3 th:text="${errorReset}"></h3>
 
-                <button id="button1" name="button1">Reset</button>
+                <button id="send_button" name="send_button">Reset</button>
             </form>
         </div>
     </div>

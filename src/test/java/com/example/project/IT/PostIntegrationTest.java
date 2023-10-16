@@ -227,4 +227,5 @@ public class PostIntegrationTest extends BaseIT {
 
         assertThat(deletedPost).isEmpty();
     }
+
 }

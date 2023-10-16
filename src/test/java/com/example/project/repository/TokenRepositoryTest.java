@@ -45,4 +45,19 @@ class TokenRepositoryTest extends BaseIT {
         assertThat(confirmationToken.get().getConfirmedAt()).isEqualTo(localDateTime);
     }
 
+    @Test
+    void itShouldFindLatestCreatedConfirmationToken() {
+        //given
+        String email = "sampleEmail@gmail.com";
+
+        //when
+        ConfirmationToken token = underTest.findLatestCreatedConfirmationToken(email);
+
+        //then
+        assertThat(token)
+                .returns(3L, ConfirmationToken::getId)
+                .returns(LocalDateTime.of(2023, 9, 29, 15, 10, 49), ConfirmationToken::getCreatedAt)
+                .returns(LocalDateTime.of(2023, 9, 29, 15, 25, 49), ConfirmationToken::getExpiresAt);
+
+    }
 }
