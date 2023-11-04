@@ -1,6 +1,7 @@
+
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-<link type="text/css" rel="stylesheet" th:href="@{/css/login.css}"/>
+<link rel="stylesheet" th:href="@{/css/login.css}"/>
 <script type="text/javascript" th:src="@{/js/logowanieJS.js}"></script>
 <head>
     <title>Login page</title>
@@ -34,7 +35,7 @@
 
                 <div th:if="${session.SPRING_SECURITY_LAST_EXCEPTION != null}">
                     <h3 th:text="${session.SPRING_SECURITY_LAST_EXCEPTION}"></h3>
-                    <a th:if="${session.SPRING_SECURITY_LAST_EXCEPTION} == 'Confirm your email'" th:href="@{/resendEmail}"><h4>Resend email</h4></a>
+                    <a th:if="${session.SPRING_SECURITY_LAST_EXCEPTION} == 'Confirm your email address'" th:href="@{/resendEmail}"><h4>Resend email</h4></a>
 
                     <div th:text="${@customRemoveAttribute.removeVerificationMessageFromSession()}"></div>
                 </div>
